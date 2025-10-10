@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "this a new concept of Ai-marketplace . using comprehensive advice and features from e-commerce platforms and principles to deliver a new system for all people. it's a social-network-ai-driven-e-commerce-marketplace",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Loofy147/Ai-e-commerce-marketplace.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Loofy147/Ai-e-commerce-marketplace/issues"
+  },
+  "homepage": "https://github.com/Loofy147/Ai-e-commerce-marketplace#readme"
+}
