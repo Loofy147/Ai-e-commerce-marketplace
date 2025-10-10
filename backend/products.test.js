@@ -3,13 +3,16 @@ const express = require('express');
 const productRoutes = require('./routes/productRoutes');
 
 // Mock the product model
-jest.mock('./models/product', () => ({
+jest.mock('./models/Product', () => ({
   create: jest.fn().mockResolvedValue({ id: 1, name: 'Test Product' }),
   findAll: jest.fn().mockResolvedValue([{ id: 1, name: 'Test Product' }]),
-  findById: jest.fn().mockResolvedValue({ id: 1, name: 'Test Product' }),
-  update: jest.fn().mockResolvedValue({ id: 1, name: 'Updated Product' }),
-  delete: jest.fn().mockResolvedValue({ id: 1, name: 'Test Product' }),
 }));
+
+// Mock the auth middleware
+jest.mock('./middleware/authMiddleware', () => (req, res, next) => {
+  req.userId = 1;
+  next();
+});
 
 const app = express();
 app.use(express.json());

@@ -1,45 +1,44 @@
-const User = require('../models/user');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
-const authController = {
-  async register(req, res) {
-    try {
-      const { username, email, password } = req.body;
-      const existingUser = await User.findByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ message: 'User with this email already exists' });
-      }
-      const user = await User.create(username, email, password);
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
-      });
-      res.status(201).json({ token });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
+const JWT_SECRET = process.env.JWT_SECRET || 'your_default_secret';
 
-  async login(req, res) {
-    try {
-      const { email, password } = req.body;
-      const user = await User.findByEmail(email);
-      if (!user) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
-      });
-      res.json({ token });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+exports.register = async (req, res) => {
+  const { username, email, password } = req.body;
+
+  try {
+    const existingUser = await User.findByEmail(email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'User with this email already exists' });
     }
-  },
+
+    const user = await User.create(username, email, password);
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).json({ token });
+  } catch (error) {
+    res.status(500).json({ error: 'Error registering user' });
+  }
 };
 
-module.exports = authController;
+exports.login = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await User.findByUsername(username);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({ error: 'Error logging in' });
+  }
+};
