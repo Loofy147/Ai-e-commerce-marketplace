@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getProducts } from '../api';
+import { useCart } from '../context/CartContext';
 
 const ProductListPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -29,7 +31,10 @@ const ProductListPage = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <ul>
         {products.map((product) => (
-          <li key={product.id}>{product.name} - ${product.price}</li>
+          <li key={product.id}>
+            {product.name} - ${product.price}
+            <button onClick={() => addToCart(product)}>Add to Cart</button>
+          </li>
         ))}
       </ul>
     </div>
