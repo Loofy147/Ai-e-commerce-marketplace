@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { register } from '../api';
+import { useNavigate } from 'react-router-dom';
+import { register as apiRegister } from '../api';
+import { useAuth } from '../context/AuthContext';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -7,15 +9,17 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      const { data } = await register({ username, email, password });
-      // Handle successful registration (e.g., store token, redirect)
-      console.log(data);
+      const { data } = await apiRegister({ username, email, password });
+      login(data.token);
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
     } finally {
@@ -28,24 +32,27 @@ const RegisterPage = () => {
       <h1>Register</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username</label>
+          <label htmlFor="username">Username</label>
           <input
+            id="username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
         <div>
-          <label>Email</label>
+          <label htmlFor="email">Email</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div>
-          <label>Password</label>
+          <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
